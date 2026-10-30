@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: smartdialer-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-smartdialer}
+      POSTGRES_USER: ${DB_USER:-smartdialer}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-smartdialer_secret_pw}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-smartdialer} -d ${DB_NAME:-smartdialer}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - smartdialer-net
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: smartdialer-app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-smartdialer}
+      DB_USER: ${DB_USER:-smartdialer}
+      DB_PASSWORD: ${DB_PASSWORD:-smartdialer_secret_pw}
+    ports:
+      - "8080:8080"
+    networks:
+      - smartdialer-net
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  smartdialer-net:
+    driver: bridge

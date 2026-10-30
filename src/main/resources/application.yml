@@ -1,0 +1,57 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: smartdialer
+
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:smartdialer}
+    username: ${DB_USER:smartdialer}
+    password: ${DB_PASSWORD:smartdialer}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      idle-timeout: 30000
+      connection-timeout: 20000
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        jdbc:
+          batch_size: 50
+
+smartdialer:
+  heartbeat-timeout-seconds: 45
+  stale-reservation-timeout-seconds: 30
+  in-flight-timeout-seconds: 60
+  default-cooldown-seconds: 300
+  default-max-attempts: 3
+  scheduler-enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+  api-docs:
+    path: /v3/api-docs
+
+logging:
+  level:
+    com.smartdialer: INFO
+    org.springframework.web: INFO

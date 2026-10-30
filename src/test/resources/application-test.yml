@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;DB_CLOSE_DELAY=-1
+    username: sa
+    password: ""
+    driver-class-name: org.h2.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+
+smartdialer:
+  heartbeat-timeout-seconds: 5
+  stale-reservation-timeout-seconds: 5
+  in-flight-timeout-seconds: 10
+  default-cooldown-seconds: 10
+  default-max-attempts: 3
+  scheduler-enabled: false
